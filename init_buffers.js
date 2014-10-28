@@ -25,10 +25,12 @@
 
 	    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
 	    pyramidVertexPositionBuffer.itemSize = 3;
-	    pyramidVertexPositionBuffer.numItems = 15;
+	    pyramidVertexPositionBuffer.numItems = 5;
 
 		pyramidVertexColorBuffer = gl.createBuffer();
 	    gl.bindBuffer(gl.ARRAY_BUFFER, pyramidVertexColorBuffer);
+
+
 	    var colors = [
 	        // Front face
 	        1.0, 0.0, 0.0, 1.0,
@@ -95,7 +97,7 @@
 	    ];
 	    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
 	    cubeVertexPositionBuffer.itemSize = 3;
-	    cubeVertexPositionBuffer.numItems = 24;
+	    cubeVertexPositionBuffer.numItems = 8;
 
 
 		cubeVertexColorBuffer = gl.createBuffer();
