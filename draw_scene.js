@@ -1,3 +1,42 @@
+function Object3D(shape, matrix) {
+	this.shape = shape;
+	this.matrix = mat4.create();
+	this.rotation = 0.0;
+	mat4.identity(this.matrix);
+	return this;
+}
+
+var scene;
+
+function build_scene() {
+	scene = [
+		new Object3D(pyramid),
+		new Object3D(cube),
+		new Object3D(cylinder),
+
+		new Object3D(pyramid),
+		new Object3D(cube),
+		new Object3D(cylinder),
+
+		new Object3D(pyramid),
+		new Object3D(cube),
+		new Object3D(cylinder)
+
+	];
+
+	mat4.translate(scene[0].matrix, [-3.0, 4.0, -15.0]);
+	mat4.translate(scene[1].matrix, [ 0.0, 4.0, -15.0]);
+	mat4.translate(scene[2].matrix, [ 3.0, 4.0, -15.0]);
+
+	mat4.translate(scene[3].matrix, [ -3.0, 0.0, -15.0]);
+	mat4.translate(scene[4].matrix, [ 0.0, 0.0, -15.0]);
+	mat4.translate(scene[5].matrix, [ 3.0, 0.0, -15.0]);
+
+	mat4.translate(scene[6].matrix, [ -3.0, -4.0, -15.0]);
+	mat4.translate(scene[7].matrix, [ 0.0, -4.0, -15.0]);
+	mat4.translate(scene[8].matrix, [ 3.0, -4.0, -15.0]);
+
+};
 
 function draw_scene() {
 	gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
@@ -5,50 +44,21 @@ function draw_scene() {
 
 	mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, pMatrix);
 
+	for (var i in scene) {
+		var object = scene[i];
 
-	// triangle
-	mat4.identity(mvMatrix);
-
-	mat4.translate(mvMatrix, [-3.0, 0.0, -7.0]);
-
-	mvPushMatrix();
-	mat4.rotate(mvMatrix, degToRad(rPyramid), [1, 1, 0]);
-
-	draw_object(pyramidVertexPositionBuffer, pyramidVertexColorBuffer, pyramidVertexIndexBuffer);
-
-	mvPopMatrix();
-
-
-
-	//square
-	mat4.identity(mvMatrix);
-
-	mat4.translate(mvMatrix, [0.0, 0.0, -7.0]);
-
-	mvPushMatrix();
-	mat4.rotate(mvMatrix, degToRad(rCube), [1, 1, 1]);
-
-	draw_object(cubeVertexPositionBuffer, cubeVertexColorBuffer, cubeVertexIndexBuffer);
-
-	mvPopMatrix();
-
-
-
-	// cylinder
-	mat4.identity(mvMatrix);
-
-	mat4.translate(mvMatrix, [3.0, 0.0, -7.0]);
-
-	mvPushMatrix();
-	mat4.rotate(mvMatrix, degToRad(rCylinder), [1, 1, 1]);
-
-	draw_object(cylinderVertexPositionBuffer, cylinderVertexColorBuffer, cylinderVertexIndexBuffer);
-
-	mvPopMatrix();
-
+		mat4.identity(mvMatrix);
+		mat4.multiply(mvMatrix, object.matrix);
+		mat4.rotate(mvMatrix, degToRad(object.rotation), [1, 1, 0]);
+		draw_object(object.shape);
+	}
 }
 
-function draw_object(vertexPositionBuffer, vertexColorBuffer, vertexIndexBuffer) {
+function draw_object(shape) {
+	var vertexPositionBuffer = shape.positionBuffer;
+	var vertexColorBuffer = shape.colorBuffer;
+	var vertexIndexBuffer = shape.indexBuffer;
+
 	gl.bindBuffer(gl.ARRAY_BUFFER, vertexPositionBuffer);
 	gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, vertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
 

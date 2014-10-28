@@ -4,6 +4,8 @@
 
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
 
+<!-- <script type="text/javascript" src="http://benvanik.github.io/WebGL-Inspector/core/embed.js" async></script> -->
+
 <script id="shader-fs" type="x-shader/x-fragment">
 	precision mediump float;
 	varying vec4 vColor;
@@ -33,6 +35,7 @@
 <script type="text/javascript" src="glMatrix-0.9.5.min.js"></script>
 <script type="text/javascript" src="init_buffers.js"></script>
 <script type="text/javascript" src="draw_scene.js"></script>
+<script type="text/javascript" src="controls.js"></script>
 
 <script type="text/javascript">
 
@@ -143,17 +146,12 @@
 	}
 
 
-	var rPyramid = 0;
-	var rCube = 0;
-	var rCylinder = 0;
-
-
-
 	function webGLStart() {
 		var canvas = document.getElementById("canvas");
 		initGL(canvas);
 		initShaders();
 		init_buffers();
+		build_scene();
 
 		gl.clearColor(0.0, 0.0, 0.0, 1.0);
 		gl.enable(gl.DEPTH_TEST);
@@ -161,8 +159,7 @@
 		gl.enable(gl.BLEND);
 		gl.enable(gl.CULL_FACE);
 
-		document.onkeydown = handleKeyDown;
-    	document.onkeyup = handleKeyUp;
+		//document.addEventListener("keydown", func);
 
 		tick();
 	}
@@ -180,13 +177,14 @@
 		var timeNow = new Date().getTime();
 		if (lastTime != 0) {
 			var elapsed = timeNow - lastTime;
-			rPyramid += (90 * elapsed) / 1000.0;
-			rCube += (75 * elapsed) / 1000.0;
-			rCylinder += (60 * elapsed) / 1000.0;
+			scene[0].rotation += (90 * elapsed) / 1000.0; // pyramid
+			scene[1].rotation += (75 * elapsed) / 1000.0; // cube
+			scene[2].rotation += (60 * elapsed) / 1000.0; // cylinder
 		}
 		lastTime = timeNow;
 	}
-    
+
+    var selected_object_id = 1;
 
 
 </script>
@@ -197,7 +195,7 @@
 
 <body onload="webGLStart();">
 
-	<canvas id="canvas" style="border: none;" width="1000" height="500"></canvas>
+	<canvas id="canvas" style="border: none;" width="1000" height="1000"></canvas>
 	<div id="messages"></div>
 
 </body>
