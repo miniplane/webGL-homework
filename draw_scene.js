@@ -13,13 +13,15 @@ function draw_scene() {
 	mvPushMatrix();
 	mat4.rotate(mvMatrix, degToRad(rPyramid), [1, 1, 0]);
 
-	gl.bindBuffer(gl.ARRAY_BUFFER, pyramidVertexPositionBuffer);
+	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, pyramidVertexPositionBuffer);
 	gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, pyramidVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
-	gl.bindBuffer(gl.ARRAY_BUFFER, pyramidVertexColorBuffer);
+	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, pyramidVertexColorBuffer);
 	gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, pyramidVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
 	setMatrixUniforms();
+	gl.drawElements(gl.TRIANGLES, pyramidVertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
+
 	gl.drawArrays(gl.TRIANGLES, 0, pyramidVertexPositionBuffer.numItems);
 
 	mvPopMatrix();
