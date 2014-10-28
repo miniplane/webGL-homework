@@ -161,6 +161,9 @@
 		gl.enable(gl.BLEND);
 		gl.enable(gl.CULL_FACE);
 
+		document.onkeydown = handleKeyDown;
+    	document.onkeyup = handleKeyUp;
+
 		tick();
 	}
 

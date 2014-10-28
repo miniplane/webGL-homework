@@ -190,15 +190,15 @@
 		var upperring = [];
 		var lowerring = [];
 
-		var n = 12;
-		for (var i; i<n; i++) {
+		var n = 24;
+		for (var i = 0; i<n; i++) {
 			upperring.push(Math.sin((i/n)*2*Math.PI)); // x
 			upperring.push(Math.cos((i/n)*2*Math.PI)); // y
-			upperring.push(3); // height / 2
+			upperring.push(1.0); // height / 2
 
 			lowerring.push(Math.sin((i/n)*2*Math.PI)); // x
 			lowerring.push(Math.cos((i/n)*2*Math.PI)); // y
-			lowerring.push(-3); // height / 2
+			lowerring.push(-1.0); // height / 2
 		}
 
 		vertices = vertices.concat(upperring);
@@ -227,7 +227,7 @@
 
 		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(unpackedColors), gl.STATIC_DRAW);
 		cylinderVertexColorBuffer.itemSize = 4;
-		cylinderVertexColorBuffer.numItems = 24;
+		cylinderVertexColorBuffer.numItems = n*4;
 		cylinderVertexIndexBuffer = gl.createBuffer();
 		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cylinderVertexIndexBuffer);
 
@@ -238,10 +238,16 @@
 			var j = i+n;
 			var k = j+n;
 			var l = k+n;
-			cylinderVertexIndices.concat([i, i+1, 0]);
-			cylinderVertexIndices.concat([j, j+1, k]);
-			cylinderVertexIndices.concat([k, j+1, k+1]);
-			cylinderVertexIndices.concat([l, l+1, 0]);
+			cylinderVertexIndices = cylinderVertexIndices.concat([0, i+1, i]);
+			cylinderVertexIndices = cylinderVertexIndices.concat([l, l+1, n*3]);
+		}
+
+		for (var i = 0; i < n; i++) {
+			var j = i+n;
+			var k = j+n;
+			var l = k+n;
+			cylinderVertexIndices = cylinderVertexIndices.concat([j, n+(i+1)%n, k]);
+			cylinderVertexIndices = cylinderVertexIndices.concat([k, n+(i+1)%n, 2*n+(i+1)%n]);
 		}
 
 		gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(cylinderVertexIndices), gl.STATIC_DRAW);

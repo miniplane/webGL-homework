@@ -9,7 +9,7 @@ function draw_scene() {
 	// triangle
 	mat4.identity(mvMatrix);
 
-	mat4.translate(mvMatrix, [-1.5, 0.0, -7.0]);
+	mat4.translate(mvMatrix, [-3.0, 0.0, -7.0]);
 
 	mvPushMatrix();
 	mat4.rotate(mvMatrix, degToRad(rPyramid), [1, 1, 0]);
@@ -23,7 +23,7 @@ function draw_scene() {
 	//square
 	mat4.identity(mvMatrix);
 
-	mat4.translate(mvMatrix, [1.5, 0.0, -7.0]);
+	mat4.translate(mvMatrix, [0.0, 0.0, -7.0]);
 
 	mvPushMatrix();
 	mat4.rotate(mvMatrix, degToRad(rCube), [1, 1, 1]);
@@ -37,7 +37,7 @@ function draw_scene() {
 	// cylinder
 	mat4.identity(mvMatrix);
 
-	mat4.translate(mvMatrix, [4.5, 0.0, -7.0]);
+	mat4.translate(mvMatrix, [3.0, 0.0, -7.0]);
 
 	mvPushMatrix();
 	mat4.rotate(mvMatrix, degToRad(rCylinder), [1, 1, 1]);
