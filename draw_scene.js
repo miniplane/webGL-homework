@@ -5,23 +5,16 @@ function draw_scene() {
 
 	mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, pMatrix);
 
-	mat4.identity(mvMatrix);
 
 	// triangle
+	mat4.identity(mvMatrix);
+
 	mat4.translate(mvMatrix, [-1.5, 0.0, -7.0]);
 
 	mvPushMatrix();
 	mat4.rotate(mvMatrix, degToRad(rPyramid), [1, 1, 0]);
 
-	gl.bindBuffer(gl.ARRAY_BUFFER, pyramidVertexPositionBuffer);
-	gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, pyramidVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
-
-	gl.bindBuffer(gl.ARRAY_BUFFER, pyramidVertexColorBuffer);
-	gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, pyramidVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
-
-	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, pyramidVertexIndexBuffer);
-	setMatrixUniforms();
-	gl.drawElements(gl.TRIANGLES, pyramidVertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
+	draw_object(pyramidVertexPositionBuffer, pyramidVertexColorBuffer, pyramidVertexIndexBuffer);
 
 	mvPopMatrix();
 
@@ -35,18 +28,34 @@ function draw_scene() {
 	mvPushMatrix();
 	mat4.rotate(mvMatrix, degToRad(rCube), [1, 1, 1]);
 
-	gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexPositionBuffer);
-    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, cubeVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexColorBuffer);
-    gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, cubeVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
-
-	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cubeVertexIndexBuffer);
-	setMatrixUniforms();
-	gl.drawElements(gl.TRIANGLES, cubeVertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
+	draw_object(cubeVertexPositionBuffer, cubeVertexColorBuffer, cubeVertexIndexBuffer);
 
 	mvPopMatrix();
 
 
+
 	// cylinder
+	mat4.identity(mvMatrix);
+
+	mat4.translate(mvMatrix, [4.5, 0.0, -7.0]);
+
+	mvPushMatrix();
+	mat4.rotate(mvMatrix, degToRad(rCylinder), [1, 1, 1]);
+
+	draw_object(cylinderVertexPositionBuffer, cylinderVertexColorBuffer, cylinderVertexIndexBuffer);
+
+	mvPopMatrix();
+
+}
+
+function draw_object(vertexPositionBuffer, vertexColorBuffer, vertexIndexBuffer) {
+	gl.bindBuffer(gl.ARRAY_BUFFER, vertexPositionBuffer);
+	gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, vertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+	gl.bindBuffer(gl.ARRAY_BUFFER, vertexColorBuffer);
+	gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, vertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, vertexIndexBuffer);
+	setMatrixUniforms();
+	gl.drawElements(gl.TRIANGLES, vertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
 }

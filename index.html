@@ -145,6 +145,7 @@
 
 	var rPyramid = 0;
 	var rCube = 0;
+	var rCylinder = 0;
 
 
 
@@ -178,6 +179,7 @@
 			var elapsed = timeNow - lastTime;
 			rPyramid += (90 * elapsed) / 1000.0;
 			rCube += (75 * elapsed) / 1000.0;
+			rCylinder += (60 * elapsed) / 1000.0;
 		}
 		lastTime = timeNow;
 	}
@@ -192,7 +194,7 @@
 
 <body onload="webGLStart();">
 
-	<canvas id="canvas" style="border: none;" width="700" height="500"></canvas>
+	<canvas id="canvas" style="border: none;" width="1000" height="500"></canvas>
 	<div id="messages"></div>
 
 </body>
