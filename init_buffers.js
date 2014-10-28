@@ -1,48 +1,31 @@
 
 	var pyramidVertexPositionBuffer;
 	var pyramidVertexColorBuffer;
+	var pyramidVertexIndexBuffer;
+
 	var cubeVertexPositionBuffer;
 	var cubeVertexColorBuffer;
 	var cubeVertexIndexBuffer;
+
 	var cylinderVertexPositionBuffer;
 	var cylinderVertexColorBuffer;
-	var cylinderIndexBuffer;
+	var cylinderVertexIndexBuffer;
 
 	function init_buffers() {
 
 		pyramidVertexPositionBuffer = gl.createBuffer();
 	    gl.bindBuffer(gl.ARRAY_BUFFER, pyramidVertexPositionBuffer);
 	    var vertices = [
-	        // Front face
-	         0.0,  1.0,  0.0,
-	        -1.0, -1.0,  1.0,
-	         1.0, -1.0,  1.0,
-	        // Right face
-	         0.0,  1.0,  0.0,
-	         1.0, -1.0,  1.0,
-	         1.0, -1.0, -1.0,
-	        // Back face
-	         0.0,  1.0,  0.0,
-	         1.0, -1.0, -1.0,
-	        -1.0, -1.0, -1.0,
-	        // Left face
-	         0.0,  1.0,  0.0,
-	        -1.0, -1.0, -1.0,
-	        -1.0, -1.0,  1.0,
-
-			// front right back bottom triangle
-			 1.0, -1.0, -1.0,
-			 1.0, -1.0,  1.0,
-			-1.0, -1.0, -1.0,
-			// front left back bottom triangle
-			 1.0, -1.0,  1.0,	     
-			-1.0, -1.0,  1.0,    
-			-1.0, -1.0, -1.0,
-
+			 1.0, -1.0,  1.0,	// 1
+			 1.0, -1.0, -1.0,	// 2
+			-1.0, -1.0,  1.0,	// 0
+			-1.0, -1.0, -1.0,	// 3
+	         0.0,  1.0,  0.0,	// 4
 	    ];
+
 	    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
 	    pyramidVertexPositionBuffer.itemSize = 3;
-	    pyramidVertexPositionBuffer.numItems = 12+6;
+	    pyramidVertexPositionBuffer.numItems = 15;
 
 		pyramidVertexColorBuffer = gl.createBuffer();
 	    gl.bindBuffer(gl.ARRAY_BUFFER, pyramidVertexColorBuffer);
@@ -78,6 +61,24 @@
 	    pyramidVertexColorBuffer.numItems = 12+6;
 
 
+    	pyramidVertexIndexBuffer = gl.createBuffer();
+	    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cubeVertexIndexBuffer);
+	    var cubeVertexIndices = [
+	    	0, 1, 4,
+	    	1, 2, 4,
+	    	2, 3, 4,
+	    	3, 0, 4,
+	    	0, 1, 3, 1, 2, 3,
+	    ];
+
+	    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(cubeVertexIndices), gl.STATIC_DRAW);
+	    pyramidVertexIndexBuffer.itemSize = 1;
+	    pyramidVertexIndexBuffer.numItems = 12+6;
+
+
+
+
+	    // cube
 
 	    cubeVertexPositionBuffer = gl.createBuffer();
 	    gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexPositionBuffer);
