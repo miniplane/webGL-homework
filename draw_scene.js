@@ -25,8 +25,11 @@ function draw_scene() {
 	mvPopMatrix();
 
 
+
 	//square
-	mat4.translate(mvMatrix, [3.0, 0.0, 0.0]);
+	mat4.identity(mvMatrix);
+
+	mat4.translate(mvMatrix, [1.5, 0.0, -7.0]);
 
 	mvPushMatrix();
 	mat4.rotate(mvMatrix, degToRad(rCube), [1, 1, 1]);
@@ -42,4 +45,7 @@ function draw_scene() {
 	gl.drawElements(gl.TRIANGLES, cubeVertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
 
 	mvPopMatrix();
+
+
+	// cylinder
 }
