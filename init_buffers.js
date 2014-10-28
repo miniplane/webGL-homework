@@ -52,13 +52,13 @@
 	        0.0, 0.0, 1.0, 1.0,
 	        0.0, 1.0, 0.0, 1.0,
 	        // Left Bottom
-	        1.0, 0.0, 0.0, 1.0,
+	        /*1.0, 0.0, 0.0, 1.0,
 	        0.0, 0.0, 1.0, 1.0,
-	        0.0, 1.0, 0.0, 1.0,
+	        0.0, 1.0, 0.0, 1.0,*/
 	    ];
 	    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
 	    pyramidVertexColorBuffer.itemSize = 4;
-	    pyramidVertexColorBuffer.numItems = 12+6;
+	    pyramidVertexColorBuffer.numItems = 15;
 
 
     	pyramidVertexIndexBuffer = gl.createBuffer();
