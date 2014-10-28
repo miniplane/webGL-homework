@@ -5,7 +5,7 @@
 	var cubeVertexColorBuffer;
 	var cubeVertexIndexBuffer;
 
-	function initBuffers() {
+	function init_buffers() {
 
 		pyramidVertexPositionBuffer = gl.createBuffer();
 	    gl.bindBuffer(gl.ARRAY_BUFFER, pyramidVertexPositionBuffer);
@@ -25,11 +25,21 @@
 	        // Left face
 	         0.0,  1.0,  0.0,
 	        -1.0, -1.0, -1.0,
-	        -1.0, -1.0,  1.0
+	        -1.0, -1.0,  1.0,
+
+			// front right back bottom triangle
+			 1.0, -1.0, -1.0,
+			 1.0, -1.0,  1.0,
+			-1.0, -1.0, -1.0,
+			// front left back bottom triangle
+			 1.0, -1.0,  1.0,	     
+			-1.0, -1.0,  1.0,    
+			-1.0, -1.0, -1.0,
+
 	    ];
 	    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
 	    pyramidVertexPositionBuffer.itemSize = 3;
-	    pyramidVertexPositionBuffer.numItems = 12;
+	    pyramidVertexPositionBuffer.numItems = 12+6;
 
 		pyramidVertexColorBuffer = gl.createBuffer();
 	    gl.bindBuffer(gl.ARRAY_BUFFER, pyramidVertexColorBuffer);
@@ -49,11 +59,20 @@
 	        // Left face
 	        1.0, 0.0, 0.0, 1.0,
 	        0.0, 0.0, 1.0, 1.0,
-	        0.0, 1.0, 0.0, 1.0
+	        0.0, 1.0, 0.0, 1.0,
+
+	        // Right bottom
+	        1.0, 0.0, 0.0, 1.0,
+	        0.0, 0.0, 1.0, 1.0,
+	        0.0, 1.0, 0.0, 1.0,
+	        // Left Bottom
+	        1.0, 0.0, 0.0, 1.0,
+	        0.0, 0.0, 1.0, 1.0,
+	        0.0, 1.0, 0.0, 1.0,
 	    ];
 	    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
 	    pyramidVertexColorBuffer.itemSize = 4;
-	    pyramidVertexColorBuffer.numItems = 12;
+	    pyramidVertexColorBuffer.numItems = 12+6;
 
 
 

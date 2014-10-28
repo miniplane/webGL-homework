@@ -32,6 +32,8 @@
 
 <script type="text/javascript" src="glMatrix-0.9.5.min.js"></script>
 <script type="text/javascript" src="init_buffers.js"></script>
+<script type="text/javascript" src="draw_scene.js"></script>
+
 <script type="text/javascript">
 
 	var gl;
@@ -145,68 +147,25 @@
 	var rCube = 0;
 
 
-	function drawScene() {
-		gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
-		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-		mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, pMatrix);
-
-		mat4.identity(mvMatrix);
-
-		// triangle
-		mat4.translate(mvMatrix, [-1.5, 0.0, -7.0]);
-
-    	mvPushMatrix();
-    	mat4.rotate(mvMatrix, degToRad(rPyramid), [0, 1, 0]);
-
-    	gl.bindBuffer(gl.ARRAY_BUFFER, pyramidVertexPositionBuffer);
-    	gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, pyramidVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
-
-    	gl.bindBuffer(gl.ARRAY_BUFFER, pyramidVertexColorBuffer);
-    	gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, pyramidVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
-
-    	setMatrixUniforms();
-    	gl.drawArrays(gl.TRIANGLES, 0, pyramidVertexPositionBuffer.numItems);
-
-    	mvPopMatrix();
-
-
-		//square
-		mat4.translate(mvMatrix, [3.0, 0.0, 0.0]);
-
-    	mvPushMatrix();
-    	mat4.rotate(mvMatrix, degToRad(rCube), [1, 1, 1]);
-
-		gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexPositionBuffer);
-	    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, cubeVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
-
-	    gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexColorBuffer);
-	    gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, cubeVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
-
-		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cubeVertexIndexBuffer);
-    	setMatrixUniforms();
-    	gl.drawElements(gl.TRIANGLES, cubeVertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
-
-		mvPopMatrix();
-	}
-
-
 
 	function webGLStart() {
 		var canvas = document.getElementById("canvas");
 		initGL(canvas);
 		initShaders();
-		initBuffers();
+		init_buffers();
 
 		gl.clearColor(0.0, 0.0, 0.0, 1.0);
 		gl.enable(gl.DEPTH_TEST);
+		gl.blendFunc(gl.SRC_ALPHA, gl.ONE); // transparency
+		gl.enable(gl.BLEND);
+		gl.enable(gl.CULL_FACE);
 
 		tick();
 	}
 
 	function tick() {
     	requestAnimationFrame(tick); // webgl-utils.js
-    	drawScene();
+    	draw_scene();
     	animate();
     }
 
