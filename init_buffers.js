@@ -50,7 +50,7 @@ function init_buffers() {
     var side1 = [1.0, 0.0, 0.0, 1.0];
     var side2 = [0.0, 0.0, 1.0, 1.0];
     var side3 = [0.0, 1.0, 0.0, 1.0];
-    var bottom = [1.0, 1.0, 1.0, 1.0];
+    var bottom = [1.0, 0.0, 1.0, 1.0];
 
     var colors = [
     	bottom,
@@ -147,7 +147,7 @@ function init_buffers() {
 		[0.0, 1.0, 0.0, 1.0], // Top face
 		[0.0, 0.0, 1.0, 1.0], // Bottom face
 		[1.0, 0.0, 1.0, 1.0], // Right face
-		[0.0, 0.0, 1.0, 1.0], // Left face
+		[0.0, 1.0, 1.0, 1.0], // Left face
 	];
 	var unpackedColors = [];
 
@@ -209,7 +209,7 @@ function init_buffers() {
 	colors = [
 		[1.0, 0.0, 0.0, 1.0], // top
 		[0.0, 1.0, 0.0, 1.0], // side
-		[1.0, 1.0, 0.0, 1.0], // bottom
+		[0.0, 0.0, 1.0, 1.0], // bottom
 	];
 
 	var unpackedColors = [];
