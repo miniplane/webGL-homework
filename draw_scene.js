@@ -1,8 +1,10 @@
-function Object3D(shape, matrix) {
+function Object3D(shape) {
 	this.shape = shape;
-	this.matrix = mat4.create();
+	this.posRotMatrix = mat4.create();
+	this.sclMatrix = mat4.create();
 	this.rotation = 0.0;
-	mat4.identity(this.matrix);
+	mat4.identity(this.posRotMatrix);
+	mat4.identity(this.sclMatrix);
 	return this;
 }
 
@@ -25,17 +27,17 @@ function build_scene() {
 
 	];
 
-	mat4.translate(scene[0].matrix, [-3.0, 4.0, -15.0]);
-	mat4.translate(scene[1].matrix, [ 0.0, 4.0, -15.0]);
-	mat4.translate(scene[2].matrix, [ 3.0, 4.0, -15.0]);
+	mat4.translate(scene[0].posRotMatrix, [-3.0, 4.0, -15.0]);
+	mat4.translate(scene[1].posRotMatrix, [ 0.0, 4.0, -15.0]);
+	mat4.translate(scene[2].posRotMatrix, [ 3.0, 4.0, -15.0]);
 
-	mat4.translate(scene[3].matrix, [ -3.0, 0.0, -15.0]);
-	mat4.translate(scene[4].matrix, [ 0.0, 0.0, -15.0]);
-	mat4.translate(scene[5].matrix, [ 3.0, 0.0, -15.0]);
+	mat4.translate(scene[3].posRotMatrix, [ -3.0, 0.0, -15.0]);
+	mat4.translate(scene[4].posRotMatrix, [ 0.0, 0.0, -15.0]);
+	mat4.translate(scene[5].posRotMatrix, [ 3.0, 0.0, -15.0]);
 
-	mat4.translate(scene[6].matrix, [ -3.0, -4.0, -15.0]);
-	mat4.translate(scene[7].matrix, [ 0.0, -4.0, -15.0]);
-	mat4.translate(scene[8].matrix, [ 3.0, -4.0, -15.0]);
+	mat4.translate(scene[6].posRotMatrix, [ -3.0, -4.0, -15.0]);
+	mat4.translate(scene[7].posRotMatrix, [ 0.0, -4.0, -15.0]);
+	mat4.translate(scene[8].posRotMatrix, [ 3.0, -4.0, -15.0]);
 
 };
 
@@ -52,7 +54,8 @@ function draw_scene() {
 
 		var object = scene[i];
 		mat4.identity(mvMatrix);
-		mat4.multiply(mvMatrix, object.matrix);
+		mat4.multiply(mvMatrix, object.posRotMatrix);
+		mat4.multiply(mvMatrix, object.sclMatrix);
 
 		// send mvMatrix to the shader
 		gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, pMatrix);
