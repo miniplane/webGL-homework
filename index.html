@@ -36,6 +36,8 @@
 <script type="text/javascript" src="init_buffers.js"></script>
 <script type="text/javascript" src="draw_scene.js"></script>
 <script type="text/javascript" src="controls.js"></script>
+<script type="text/javascript" src="transformations.js"></script>
+
 
 <script type="text/javascript">
 
@@ -119,32 +121,11 @@
 
 
 	var mvMatrix = mat4.create();
-	var mvMatrixStack = [];
 	var pMatrix = mat4.create();
-
-
-	function mvPushMatrix() {
-		var copy = mat4.create();
-		mat4.set(mvMatrix, copy);
-		mvMatrixStack.push(copy);
-	}
-
-	function mvPopMatrix() {
-		if (mvMatrixStack.length == 0) {
-			throw "Invalid popMatrix";
-		}
-		mvMatrix = mvMatrixStack.pop();
-	}
 
 	function degToRad(degrees) {
         return degrees * Math.PI / 180;
     }
-
-	function setMatrixUniforms() {
-		gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, pMatrix);
-		gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mvMatrix);
-	}
-
 
 	function webGLStart() {
 		var canvas = document.getElementById("canvas");
@@ -152,6 +133,7 @@
 		initShaders();
 		init_buffers();
 		build_scene();
+		keyboard_input();
 
 		gl.clearColor(0.0, 0.0, 0.0, 1.0);
 		gl.enable(gl.DEPTH_TEST);
