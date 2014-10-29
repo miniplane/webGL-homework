@@ -1,4 +1,3 @@
-/*
 function initControls() {
     var rotationKeys = ["W", "S", "E", "Q", "D", "A"];
     var scalingKeys = ["X", "Y", "Z"];
@@ -58,4 +57,3 @@ function initControls() {
                 }
 
             }
-*/

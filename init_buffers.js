@@ -2,20 +2,64 @@ function Shape() {
 	this.positionBuffer = gl.createBuffer();
 	this.colorBuffer = gl.createBuffer();
 	this.indexBuffer = gl.createBuffer();
+
+	this.positionBuffer.itemSize = 3;
+	this.colorBuffer.itemSize = 4;
+	this.indexBuffer.itemSize = 1;
+
+	this.elementType = gl.TRIANGLES;
+
 	return this;
 }
 
+var coordinate_system;
 var pyramid;
 var cube;
 var cylinder;
 
 function init_buffers() {
 
+	coordinate_system = new Shape();
 	pyramid = new Shape();
 	cube = new Shape();
 	cylinder = new Shape();
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, pyramid.positionBuffer);
+	var vertices = [
+		1.5, 0.0, 0.0,
+		0.0, 1.5, 0.0,
+		0.0, 0.0, 1.5,
+		0.0, 0.0, 0.0
+	];
+
+	var colors = [
+		1.0, 0.0, 0.0, 1.0,
+		0.0, 1.0, 0.0, 1.0,
+		0.0, 0.0, 1.0, 1.0,
+		1.0, 1.0, 1.0, 1.0
+	];
+
+	var indices = [
+		0, 3,
+		1, 3,
+		2, 3
+	];
+
+	gl.bindBuffer(gl.ARRAY_BUFFER, coordinate_system.positionBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+	coordinate_system.positionBuffer.numItems = vertices.length;
+
+	gl.bindBuffer(gl.ARRAY_BUFFER, coordinate_system.colorBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
+	coordinate_system.colorBuffer.numItems = colors.length;
+
+	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, coordinate_system.indexBuffer);
+	gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
+	coordinate_system.indexBuffer.numItems = indices.length;
+
+	coordinate_system.elementType = gl.LINES;
+
+	////////
+
     var vertices = [
     	-1.0, -1.0,  1.0,	//  0
     	-1.0, -1.0,  1.0,	//  1
@@ -40,11 +84,10 @@ function init_buffers() {
 
     ];
 
+    gl.bindBuffer(gl.ARRAY_BUFFER, pyramid.positionBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
-    pyramid.positionBuffer.itemSize = 3;
     pyramid.positionBuffer.numItems = 5;
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, pyramid.colorBuffer);
 
     var side0 = [1.0, 1.0, 0.0, 1.0];
     var side1 = [1.0, 0.0, 0.0, 1.0];
@@ -79,12 +122,11 @@ function init_buffers() {
     for (var i in colors) {
     	flatcolors = flatcolors.concat(colors[i]);
     }
+    gl.bindBuffer(gl.ARRAY_BUFFER, pyramid.colorBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(flatcolors), gl.STATIC_DRAW);
-    pyramid.colorBuffer.itemSize = 4;
     pyramid.colorBuffer.numItems = colors.length;
 
 
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, pyramid.indexBuffer);
     var pyramidVertexIndices = [
     	6, 3, 0, 9, 6, 0,
     	12,  1,  5,
@@ -93,8 +135,8 @@ function init_buffers() {
     	15, 10,  2
     ];
 
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, pyramid.indexBuffer);
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(pyramidVertexIndices), gl.STATIC_DRAW);
-    pyramid.indexBuffer.itemSize = 1;
     pyramid.indexBuffer.numItems = 12+6;
 
 
@@ -138,7 +180,6 @@ function init_buffers() {
 
 
 	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
-	cube.positionBuffer.itemSize = 3;
 	cube.positionBuffer.numItems = 24;
 	gl.bindBuffer(gl.ARRAY_BUFFER, cube.colorBuffer);
 	colors = [
@@ -158,7 +199,6 @@ function init_buffers() {
 		}
 	}
 	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(unpackedColors), gl.STATIC_DRAW);
-	cube.colorBuffer.itemSize = 4;
 	cube.colorBuffer.numItems = 24;
 	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cube.indexBuffer);
 
@@ -171,7 +211,6 @@ function init_buffers() {
 		20, 21, 22, 20, 22, 23 // Left face
 	]
 	gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(cubeVertexIndices), gl.STATIC_DRAW);
-	cube.indexBuffer.itemSize = 1;
 	cube.indexBuffer.numItems = 36;
 
 
@@ -203,7 +242,6 @@ function init_buffers() {
 
 
 	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
-	cylinder.positionBuffer.itemSize = 3;
 	cylinder.positionBuffer.numItems = n*4;
 	gl.bindBuffer(gl.ARRAY_BUFFER, cylinder.colorBuffer);
 	colors = [
@@ -220,7 +258,6 @@ function init_buffers() {
 
 
 	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(unpackedColors), gl.STATIC_DRAW);
-	cylinder.colorBuffer.itemSize = 4;
 	cylinder.colorBuffer.numItems = n*4;
 	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cylinder.indexBuffer);
 
@@ -244,6 +281,5 @@ function init_buffers() {
 	}
 
 	gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(cylinderVertexIndices), gl.STATIC_DRAW);
-	cylinder.indexBuffer.itemSize = 1;
 	cylinder.indexBuffer.numItems = cylinderVertexIndices.length;
 }

@@ -41,6 +41,7 @@ function build_scene() {
 function draw_scene() {
 	gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+	gl.lineWidth(3);
 
 	mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, pMatrix);
 
@@ -51,6 +52,7 @@ function draw_scene() {
 		mat4.multiply(mvMatrix, object.matrix);
 		mat4.rotate(mvMatrix, degToRad(object.rotation), [1, 1, 0]);
 		draw_object(object.shape);
+		draw_object(coordinate_system);
 	}
 }
 
@@ -67,5 +69,5 @@ function draw_object(shape) {
 
 	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, vertexIndexBuffer);
 	setMatrixUniforms();
-	gl.drawElements(gl.TRIANGLES, vertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
+	gl.drawElements(shape.elementType, vertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
 }
