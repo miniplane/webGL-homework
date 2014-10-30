@@ -4,6 +4,7 @@ webGL-homework
 1-9: toggle between the shapes
 
 scaling:
+
     'x': decrease the width of the shape by a factor of 0.9
     'X': increase the width of the shape by a factor of 1.1
     'y': decrease the height of the shape by a factor of 0.9
@@ -12,6 +13,7 @@ scaling:
     'Z': increase the depth of the shape by a factor of 1.1
 
 rotation:
+
     "w": rotate the current shape clockwise about the x-axis
     "s": rotate the current shape counterclockwise about the x-axis
     "e": rotate the current shape clockwise about the y-axis 
@@ -20,7 +22,8 @@ rotation:
     "a": rotate the current shape counterclockwise about the z-axis
   
   movement:
-    use arrow keys to move the selected shape
+  
+		use arrow keys to move the selected shape
     "," (comma): move the shape forward
     "." (period): move the shape backward
 
