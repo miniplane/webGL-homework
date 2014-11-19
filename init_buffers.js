@@ -1,3 +1,4 @@
+
 function Shape() {
 	this.positionBuffer = gl.createBuffer();
 	this.colorBuffer = gl.createBuffer();
@@ -16,49 +17,14 @@ var coordinate_system;
 var pyramid;
 var cube;
 var cylinder;
+var sphere;
 
-function init_buffers() {
 
-	coordinate_system = new Shape();
+
+
+function init_pyramid_buffers() {
+	
 	pyramid = new Shape();
-	cube = new Shape();
-	cylinder = new Shape();
-
-	var vertices = [
-		1.5, 0.0, 0.0,
-		0.0, 1.5, 0.0,
-		0.0, 0.0, 1.5,
-		0.0, 0.0, 0.0
-	];
-
-	var colors = [
-		1.0, 0.0, 0.0, 1.0,
-		0.0, 1.0, 0.0, 1.0,
-		0.0, 0.0, 1.0, 1.0,
-		1.0, 1.0, 1.0, 1.0
-	];
-
-	var indices = [
-		0, 3,
-		1, 3,
-		2, 3
-	];
-
-	gl.bindBuffer(gl.ARRAY_BUFFER, coordinate_system.positionBuffer);
-	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
-	coordinate_system.positionBuffer.numItems = vertices.length;
-
-	gl.bindBuffer(gl.ARRAY_BUFFER, coordinate_system.colorBuffer);
-	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
-	coordinate_system.colorBuffer.numItems = colors.length;
-
-	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, coordinate_system.indexBuffer);
-	gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
-	coordinate_system.indexBuffer.numItems = indices.length;
-
-	coordinate_system.elementType = gl.LINES;
-
-	////////
 
     var vertices = [
     	-1.0, -1.0,  1.0,	//  0
@@ -139,10 +105,13 @@ function init_buffers() {
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(pyramidVertexIndices), gl.STATIC_DRAW);
     pyramid.indexBuffer.numItems = 12+6;
 
+}
 
 
 
-    // cube
+
+function init_cube_buffers() {
+	cube = new Shape();
 
 	gl.bindBuffer(gl.ARRAY_BUFFER, cube.positionBuffer);
 	vertices = [
@@ -213,9 +182,13 @@ function init_buffers() {
 	gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(cubeVertexIndices), gl.STATIC_DRAW);
 	cube.indexBuffer.numItems = 36;
 
+}
 
 
-// cylinder
+
+
+function init_cylinder_buffers(n) {
+	cylinder = new Shape();
 
 	gl.bindBuffer(gl.ARRAY_BUFFER, cylinder.positionBuffer);
 	
@@ -224,7 +197,6 @@ function init_buffers() {
 	var upperring = [];
 	var lowerring = [];
 
-	var n = 24;
 	for (var i = 0; i<n; i++) {
 		upperring.push(Math.sin((i/n)*2*Math.PI)); // x
 		upperring.push(Math.cos((i/n)*2*Math.PI)); // y
@@ -282,4 +254,107 @@ function init_buffers() {
 
 	gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(cylinderVertexIndices), gl.STATIC_DRAW);
 	cylinder.indexBuffer.numItems = cylinderVertexIndices.length;
+}
+
+
+function init_sphere_buffers(n, ring_num) {
+	sphere = new Shape();
+
+	var positions = [];
+	var unpackedColors = [];
+	var sphereVertexIndices = [];
+
+	var vertexIndexForRingAndN = function (j, i) {
+		return (i%n)+j*n;
+	};
+
+	for (var j = 0; j<ring_num; j++) {
+		var r = Math.sin((j/(ring_num-1))*Math.PI);
+		var height = Math.cos((j/(ring_num-1))*Math.PI);
+		for (var i = 0; i<n; i++) {
+			positions.push(r*Math.sin((i/n)*2*Math.PI)); // x
+			positions.push(r*Math.cos((i/n)*2*Math.PI)); // y
+			height_pos = height;
+			positions.push(height);
+
+			if (j < ring_num-1) {
+
+				var aa = vertexIndexForRingAndN(j,   i);
+				var ab = vertexIndexForRingAndN(j,   i+1);
+				var ba = vertexIndexForRingAndN(j+1, i);
+				var bb = vertexIndexForRingAndN(j+1, i+1);
+
+				sphereVertexIndices = sphereVertexIndices.concat([aa, ab, bb]);
+				sphereVertexIndices = sphereVertexIndices.concat([aa, bb, ba]);
+			}
+
+		}
+	}
+
+	var color = [1.0, 1.0, 0.0, 1.0]; // yellow
+
+	for (var j = 0; j<ring_num; j++)
+		for (var i = 0; i<n; i++) 
+			unpackedColors = unpackedColors.concat(color);
+
+	gl.bindBuffer(gl.ARRAY_BUFFER, sphere.positionBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
+	sphere.positionBuffer.numItems = n*ring_num;
+
+	gl.bindBuffer(gl.ARRAY_BUFFER, sphere.colorBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(unpackedColors), gl.STATIC_DRAW);
+	sphere.colorBuffer.numItems = n*ring_num;
+
+	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, sphere.indexBuffer);
+	gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(sphereVertexIndices), gl.STATIC_DRAW);
+	sphere.indexBuffer.numItems = sphereVertexIndices.length;
+
+}
+
+
+
+
+function init_buffers() {
+
+	coordinate_system = new Shape();
+
+	var vertices = [
+		1.5, 0.0, 0.0,
+		0.0, 1.5, 0.0,
+		0.0, 0.0, 1.5,
+		0.0, 0.0, 0.0
+	];
+
+	var colors = [
+		1.0, 0.0, 0.0, 1.0,
+		0.0, 1.0, 0.0, 1.0,
+		0.0, 0.0, 1.0, 1.0,
+		1.0, 1.0, 1.0, 1.0
+	];
+
+	var indices = [
+		0, 3,
+		1, 3,
+		2, 3
+	];
+
+	gl.bindBuffer(gl.ARRAY_BUFFER, coordinate_system.positionBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+	coordinate_system.positionBuffer.numItems = vertices.length;
+
+	gl.bindBuffer(gl.ARRAY_BUFFER, coordinate_system.colorBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
+	coordinate_system.colorBuffer.numItems = colors.length;
+
+	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, coordinate_system.indexBuffer);
+	gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
+	coordinate_system.indexBuffer.numItems = indices.length;
+
+	coordinate_system.elementType = gl.LINES;
+
+
+	init_pyramid_buffers();
+    init_cube_buffers();
+	init_cylinder_buffers(24);
+	init_sphere_buffers(24, 12);
 }

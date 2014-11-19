@@ -1,7 +1,5 @@
 function scale(keyString, event) {
 
-	console.log("keystring: ", keyString);
-
 	var factor = 0.9;
 	if (event.shiftKey)
 		factor = 1.1;
@@ -26,8 +24,6 @@ function scale(keyString, event) {
 
 function rotate(keyString) {
 
-	console.log("keystring: ", keyString);
-
 	switch (keyString) {
 			case "W": mat4.rotate(scene[selected_object_id].posRotMatrix, degToRad(10), [1, 0, 0]); // x clockwise
 				break;
@@ -45,8 +41,6 @@ function rotate(keyString) {
 }
 
 function translate(event) { // move shape using arrow keys
-
-        console.log("asdf");
 
         switch (event.keyCode) {
         	case 37: mat4.translate(scene[selected_object_id].posRotMatrix, [-0.1, 0, 0]); // left

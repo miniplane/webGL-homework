@@ -1,10 +1,13 @@
 function Object3D(shape) {
 	this.shape = shape;
+
 	this.posRotMatrix = mat4.create();
 	this.sclMatrix = mat4.create();
 	this.rotation = 0.0;
+
 	mat4.identity(this.posRotMatrix);
 	mat4.identity(this.sclMatrix);
+
 	return this;
 }
 
@@ -17,7 +20,7 @@ function build_scene() {
 		new Object3D(cube),
 		new Object3D(cylinder),
 
-		new Object3D(pyramid),
+		new Object3D(teapot),
 		new Object3D(cube),
 		new Object3D(cylinder),
 

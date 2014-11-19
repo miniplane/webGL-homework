@@ -32,8 +32,11 @@
 	}
 </script>
 
+<script type="text/javascript" src="jquery-2.1.1.min.js"></script>
 <script type="text/javascript" src="glMatrix-0.9.5.min.js"></script>
 <script type="text/javascript" src="init_buffers.js"></script>
+<script type="text/javascript" src="load_model.js"></script> 
+
 <script type="text/javascript" src="draw_scene.js"></script>
 <script type="text/javascript" src="controls.js"></script>
 <script type="text/javascript" src="transformations.js"></script>
@@ -132,6 +135,7 @@
 		initGL(canvas);
 		initShaders();
 		init_buffers();
+		loadScene();
 		build_scene();
 		keyboard_input();
 
@@ -152,21 +156,17 @@
     	animate();
     }
 
-    
-	var lastTime = 0;
 
 	function animate() {
 		var timeNow = new Date().getTime();
-		if (lastTime != 0) {
-			var elapsed = timeNow - lastTime;
-			scene[0].rotation += (90 * elapsed) / 1000.0; // pyramid
-			scene[1].rotation += (75 * elapsed) / 1000.0; // cube
-			scene[2].rotation += (60 * elapsed) / 1000.0; // cylinder
-		}
+		elapsed = timeNow - lastTime;
 		lastTime = timeNow;
 	}
 
-    var selected_object_id = 1;
+	var lastTime = new Date().getTime();
+	var elapsed = 0;
+
+    var selected_object_id = 0;
 
 
 </script>
