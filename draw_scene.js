@@ -1,9 +1,15 @@
-function Object3D(shape) {
+function Object3D(shape, children) {
 	this.shape = shape;
 
 	this.posRotMatrix = mat4.create();
 	this.sclMatrix = mat4.create();
 	this.rotation = 0.0;
+
+	if (children !== undefined)
+		this.children = children;
+	else
+		this.children = [];
+
 
 	mat4.identity(this.posRotMatrix);
 	mat4.identity(this.sclMatrix);
@@ -15,34 +21,36 @@ var selected;
 var scene;
 
 function build_scene() {
-	scene = [
-		new Object3D(pyramid),
-		new Object3D(cube),
-		new Object3D(cylinder),
+	scene = [ 
+		new Object3D(null, [
+			new Object3D(pyramid),
+			new Object3D(cube),
+			new Object3D(cylinder),
 
-		new Object3D(teapot),
-		new Object3D(cube),
-		new Object3D(cylinder),
+			new Object3D(teapot),
+			new Object3D(cube),
+			new Object3D(cylinder),
 
-		new Object3D(pyramid),
-		new Object3D(cube),
-		new Object3D(cylinder)
-
+			new Object3D(pyramid),
+			new Object3D(cube),
+			new Object3D(cylinder)
+			])
 	];
 
-	mat4.translate(scene[0].posRotMatrix, [-3.0, 4.0, -15.0]);
-	mat4.translate(scene[1].posRotMatrix, [ 0.0, 4.0, -15.0]);
-	mat4.translate(scene[2].posRotMatrix, [ 3.0, 4.0, -15.0]);
+	mat4.translate(scene[0].children[0].posRotMatrix, [-3.0, 4.0, -15.0]);
+	mat4.translate(scene[0].children[1].posRotMatrix, [ 0.0, 4.0, -15.0]);
+	mat4.translate(scene[0].children[2].posRotMatrix, [ 3.0, 4.0, -15.0]);
 
-	mat4.translate(scene[3].posRotMatrix, [ -3.0, 0.0, -15.0]);
-	mat4.translate(scene[4].posRotMatrix, [ 0.0, 0.0, -15.0]);
-	mat4.translate(scene[5].posRotMatrix, [ 3.0, 0.0, -15.0]);
+	mat4.translate(scene[0].children[3].posRotMatrix, [ -3.0, 0.0, -15.0]);
+	mat4.translate(scene[0].children[4].posRotMatrix, [ 0.0, 0.0, -15.0]);
+	mat4.translate(scene[0].children[5].posRotMatrix, [ 3.0, 0.0, -15.0]);
 
-	mat4.translate(scene[6].posRotMatrix, [ -3.0, -4.0, -15.0]);
-	mat4.translate(scene[7].posRotMatrix, [ 0.0, -4.0, -15.0]);
-	mat4.translate(scene[8].posRotMatrix, [ 3.0, -4.0, -15.0]);
+	mat4.translate(scene[0].children[6].posRotMatrix, [ -3.0, -4.0, -15.0]);
+	mat4.translate(scene[0].children[7].posRotMatrix, [ 0.0, -4.0, -15.0]);
+	mat4.translate(scene[0].children[8].posRotMatrix, [ 3.0, -4.0, -15.0]);
 
 };
+
 
 function draw_scene() {
 	gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
@@ -51,25 +59,44 @@ function draw_scene() {
 
 	mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, pMatrix);
 
+	gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, pMatrix);
 
-	// draw coordinate system for selected shape
+	var rootMatrix = mat4.create();
+	mat4.identity(rootMatrix);
+
 	for (var i in scene) {
+		draw_scene_subtree(rootMatrix, scene[i]);
+	}
 
-		var object = scene[i];
-		mat4.identity(mvMatrix);
-		mat4.multiply(mvMatrix, object.posRotMatrix);
-		mat4.multiply(mvMatrix, object.sclMatrix);
+	//scene.forEach(draw_scene_subtree);
+}
 
-		// send mvMatrix to the shader
-		gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, pMatrix);
-		gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mvMatrix);
 
+
+function draw_scene_subtree(parentmatrix, object) {
+	var localmatrix = mat4.create();
+	mat4.set(parentmatrix, localmatrix);
+
+	//mat4.rotate(object.posRotMatrix, degToRad(-10), [0, 0, 1]);
+
+	mat4.multiply(localmatrix, object.posRotMatrix);
+	mat4.multiply(localmatrix, object.sclMatrix);
+
+	// send localmatrix to the shader
+	gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, localmatrix);
+
+	if (object.shape !== null)
 		draw_object(object.shape);
 
-		if (i == selected_object_id)
+	for (var i in object.children) {
+		draw_scene_subtree(localmatrix, object.children[i]);
+		if (selected_object_id-1 == i)
 			draw_object(coordinate_system);
 	}
+
+	//draw_object(coordinate_system);
 }
+
 
 function draw_object(shape) {
 	var vertexPositionBuffer = shape.positionBuffer;
