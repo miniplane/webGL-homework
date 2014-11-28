@@ -116,7 +116,7 @@ function init_cube_buffers() {
 	cube = new Shape();
 
     gl.bindBuffer(gl.ARRAY_BUFFER, cube.normalBuffer);
-    var vertexNormals = [
+    var normals = [
 		// Front face
 		0.0,  0.0,  1.0,
 		0.0,  0.0,  1.0,
@@ -148,7 +148,7 @@ function init_cube_buffers() {
 		-1.0,  0.0,  0.0,
 		-1.0,  0.0,  0.0,
     ];
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexNormals), gl.STATIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normals), gl.STATIC_DRAW);
     cube.normalBuffer.itemSize = 3;
     cube.normalBuffer.numItems = 24;
 
@@ -370,6 +370,13 @@ function init_buffers() {
 		0.0, 1.0, 0.0, 1.0,
 		0.0, 0.0, 1.0, 1.0,
 		1.0, 1.0, 1.0, 1.0
+	];
+
+	var normals = [
+		0, 0, 0,
+		0, 0, 0,
+		0, 0, 0,
+		0, 0, 0
 	];
 
 	var indices = [

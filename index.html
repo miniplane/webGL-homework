@@ -152,9 +152,9 @@
 		shaderProgram.useLightingUniform = gl.getUniformLocation(shaderProgram, "uUseLighting");
 	}
 
-	function change_lightning_mode(lightning_mode) { // lightning_mode can switch between modes like phong and gouraud shading
+	function change_lighting_mode(lighting_mode) { // lighting_mode can switch between modes like phong and gouraud shading
 		
-		gl.uniform1i(shaderProgram.useLightingUniform, lightning_mode);
+		gl.uniform1i(shaderProgram.useLightingUniform, lighting_mode);
 
 		// ambient
 		gl.uniform3f(shaderProgram.ambientColorUniform, 0.2, 0.2, 0.2); 
@@ -166,7 +166,7 @@
 		vec3.scale(adjustedLD, -1);
 
 		gl.uniform3fv(shaderProgram.lightingDirectionUniform, adjustedLD);
-		gl.uniform3f(shaderProgram.directionalColorUniform, 0.3, 0.3, 0.3); // lightning color
+		gl.uniform3f(shaderProgram.directionalColorUniform, 0.5, 0.5, 0.5); // lighting color
 	}
 
 

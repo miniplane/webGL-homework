@@ -56,6 +56,8 @@ function build_scene() {
 
 function draw_scene() {
 
+	change_lighting_mode(1);
+
 	gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 	gl.lineWidth(3);
