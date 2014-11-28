@@ -1,10 +1,12 @@
 
 function Shape() {
 	this.positionBuffer = gl.createBuffer();
+	this.normalBuffer = gl.createBuffer();
 	this.colorBuffer = gl.createBuffer();
 	this.indexBuffer = gl.createBuffer();
 
 	this.positionBuffer.itemSize = 3;
+	this.normalBuffer.itemSize = 3;
 	this.colorBuffer.itemSize = 4;
 	this.indexBuffer.itemSize = 1;
 
@@ -112,6 +114,44 @@ function init_pyramid_buffers() {
 
 function init_cube_buffers() {
 	cube = new Shape();
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, cube.normalBuffer);
+    var vertexNormals = [
+		// Front face
+		0.0,  0.0,  1.0,
+		0.0,  0.0,  1.0,
+		0.0,  0.0,  1.0,
+		0.0,  0.0,  1.0,
+		// Back face
+		0.0,  0.0, -1.0,
+		0.0,  0.0, -1.0,
+		0.0,  0.0, -1.0,
+		0.0,  0.0, -1.0,
+		// Top face
+		0.0,  1.0,  0.0,
+		0.0,  1.0,  0.0,
+		0.0,  1.0,  0.0,
+		0.0,  1.0,  0.0,
+		// Bottom face
+		0.0, -1.0,  0.0,
+		0.0, -1.0,  0.0,
+		0.0, -1.0,  0.0,
+		0.0, -1.0,  0.0,
+		// Right face
+		1.0,  0.0,  0.0,
+		1.0,  0.0,  0.0,
+		1.0,  0.0,  0.0,
+		1.0,  0.0,  0.0,
+		// Left face
+		-1.0,  0.0,  0.0,
+		-1.0,  0.0,  0.0,
+		-1.0,  0.0,  0.0,
+		-1.0,  0.0,  0.0,
+    ];
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexNormals), gl.STATIC_DRAW);
+    cube.normalBuffer.itemSize = 3;
+    cube.normalBuffer.numItems = 24;
+
 
 	gl.bindBuffer(gl.ARRAY_BUFFER, cube.positionBuffer);
 	vertices = [

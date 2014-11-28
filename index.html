@@ -4,31 +4,54 @@
 
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
 
-<!-- <script type="text/javascript" src="http://benvanik.github.io/WebGL-Inspector/core/embed.js" async></script> -->
+<script type="text/javascript" src="http://benvanik.github.io/WebGL-Inspector/core/embed.js" async></script>
 
 <script id="shader-fs" type="x-shader/x-fragment">
 	precision mediump float;
+
 	varying vec4 vColor;
+	varying vec3 vLightWeighting;
 
 	void main(void) {
-		gl_FragColor = vColor;
-	}
+		gl_FragColor = vec4(vColor.rgb * vLightWeighting, vColor.a);
+    }
+
 </script>
 
 <script id="shader-vs" type="x-shader/x-vertex">
 
 	attribute vec3 aVertexPosition;
+	attribute vec3 aVertexNormal;
 	attribute vec4 aVertexColor;
-
 
 	uniform mat4 uMVMatrix;
 	uniform mat4 uPMatrix;
 
+	uniform vec3 uAmbientColor;
+	uniform vec3 uDirectionalColor;
+
+	uniform vec3 uLightingDirection;
+
+	uniform bool uUseLighting;
+
 	varying vec4 vColor;
+	varying vec3 vLightWeighting;
 
 	void main(void) {
+		mat4 uNMatrix;
+		uNMatrix = uMVMatrix;
+
 		gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
 		vColor = aVertexColor;
+
+		if (!uUseLighting)
+			vLightWeighting = vec3(1.0, 1.0, 1.0);
+		else {
+			vec3 transformedNormal = mat3(uNMatrix) * aVertexNormal;
+			float directionalLightWeighting = max(dot(transformedNormal, uLightingDirection), 0.0);
+			vLightWeighting = uAmbientColor + uDirectionalColor * directionalLightWeighting;
+		}
+
 	}
 </script>
 
@@ -118,8 +141,32 @@
 		shaderProgram.vertexColorAttribute = gl.getAttribLocation(shaderProgram, "aVertexColor");
 		gl.enableVertexAttribArray(shaderProgram.vertexColorAttribute);
 
-		shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
+		shaderProgram.vertexNormalAttribute = gl.getAttribLocation(shaderProgram, "aVertexNormal");
+		gl.enableVertexAttribArray(shaderProgram.vertexNormalAttribute);
+
 		shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
+		shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
+		shaderProgram.ambientColorUniform = gl.getUniformLocation(shaderProgram, "uAmbientColor");
+		shaderProgram.directionalColorUniform = gl.getUniformLocation(shaderProgram, "uDirectionalColor");
+		shaderProgram.lightingDirectionUniform = gl.getUniformLocation(shaderProgram, "uLightingDirection");
+		shaderProgram.useLightingUniform = gl.getUniformLocation(shaderProgram, "uUseLighting");
+	}
+
+	function change_lightning_mode(lightning_mode) { // lightning_mode can switch between modes like phong and gouraud shading
+		
+		gl.uniform1i(shaderProgram.useLightingUniform, lightning_mode);
+
+		// ambient
+		gl.uniform3f(shaderProgram.ambientColorUniform, 0.2, 0.2, 0.2); 
+
+		// directional
+		var lighting_direction = [1, 1, 1]
+		var adjustedLD = vec3.create();
+		vec3.normalize(lighting_direction, adjustedLD);
+		vec3.scale(adjustedLD, -1);
+
+		gl.uniform3fv(shaderProgram.lightingDirectionUniform, adjustedLD);
+		gl.uniform3f(shaderProgram.directionalColorUniform, 0.3, 0.3, 0.3); // lightning color
 	}
 
 
