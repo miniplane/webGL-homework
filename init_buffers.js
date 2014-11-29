@@ -153,7 +153,6 @@ function init_cube_buffers() {
     cube.normalBuffer.numItems = 24;
 
 
-	gl.bindBuffer(gl.ARRAY_BUFFER, cube.positionBuffer);
 	vertices = [
 		// Front face
 		-1.0, -1.0, 1.0,
@@ -188,9 +187,10 @@ function init_cube_buffers() {
 	];
 
 
+	gl.bindBuffer(gl.ARRAY_BUFFER, cube.positionBuffer);
 	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
 	cube.positionBuffer.numItems = 24;
-	gl.bindBuffer(gl.ARRAY_BUFFER, cube.colorBuffer);
+
 	colors = [
 		[1.0, 0.0, 0.0, 1.0], // Front face
 		[1.0, 1.0, 0.0, 1.0], // Back face
@@ -207,9 +207,9 @@ function init_cube_buffers() {
 			unpackedColors = unpackedColors.concat(color);
 		}
 	}
+	gl.bindBuffer(gl.ARRAY_BUFFER, cube.colorBuffer);
 	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(unpackedColors), gl.STATIC_DRAW);
 	cube.colorBuffer.numItems = 24;
-	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cube.indexBuffer);
 
 	var cubeVertexIndices = [
 		0, 1, 2, 0, 2, 3, // Front face
@@ -219,6 +219,7 @@ function init_cube_buffers() {
 		16, 17, 18, 16, 18, 19, // Right face
 		20, 21, 22, 20, 22, 23 // Left face
 	]
+	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cube.indexBuffer);
 	gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(cubeVertexIndices), gl.STATIC_DRAW);
 	cube.indexBuffer.numItems = 36;
 
@@ -230,21 +231,38 @@ function init_cube_buffers() {
 function init_cylinder_buffers(n) {
 	cylinder = new Shape();
 
-	gl.bindBuffer(gl.ARRAY_BUFFER, cylinder.positionBuffer);
-	
-	vertices = [];
+	var vertices = [];
+	var normals = [];
 
 	var upperring = [];
 	var lowerring = [];
 
+	var normalsUp = [];
+	var normalsSide = [];
+	var normalsDown = [];
+
 	for (var i = 0; i<n; i++) {
-		upperring.push(Math.sin((i/n)*2*Math.PI)); // x
-		upperring.push(Math.cos((i/n)*2*Math.PI)); // y
+		var angle = (i/n)*2*Math.PI;
+
+		upperring.push(Math.sin(angle)); // x
+		upperring.push(Math.cos(angle)); // y
 		upperring.push(1.0); // height / 2
 
-		lowerring.push(Math.sin((i/n)*2*Math.PI)); // x
-		lowerring.push(Math.cos((i/n)*2*Math.PI)); // y
+		lowerring.push(Math.sin(angle)); // x
+		lowerring.push(Math.cos(angle)); // y
 		lowerring.push(-1.0); // height / 2
+
+		normalsUp.push(0.0);
+		normalsUp.push(0.0);
+		normalsUp.push(1.0);
+
+		normalsSide.push(Math.sin(angle));
+		normalsSide.push(Math.cos(angle));
+		normalsSide.push(0.0);
+
+		normalsDown.push(0.0);
+		normalsDown.push(0.0);
+		normalsDown.push(-1.0);
 	}
 
 	vertices = vertices.concat(upperring);
@@ -252,9 +270,20 @@ function init_cylinder_buffers(n) {
 	vertices = vertices.concat(lowerring);
 	vertices = vertices.concat(lowerring);
 
+	normals = normals.concat(normalsUp);
+	normals = normals.concat(normalsSide);
+	normals = normals.concat(normalsSide);
+	normals = normals.concat(normalsDown);
 
+
+	gl.bindBuffer(gl.ARRAY_BUFFER, cylinder.positionBuffer);
 	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
 	cylinder.positionBuffer.numItems = n*4;
+
+	gl.bindBuffer(gl.ARRAY_BUFFER, cylinder.normalBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+	cylinder.normalBuffer.numItems = n*4;
+
 	gl.bindBuffer(gl.ARRAY_BUFFER, cylinder.colorBuffer);
 	colors = [
 		[1.0, 0.0, 0.0, 1.0], // top
@@ -388,6 +417,10 @@ function init_buffers() {
 	gl.bindBuffer(gl.ARRAY_BUFFER, coordinate_system.positionBuffer);
 	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
 	coordinate_system.positionBuffer.numItems = vertices.length;
+
+	gl.bindBuffer(gl.ARRAY_BUFFER, coordinate_system.normalBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normals), gl.STATIC_DRAW);
+	coordinate_system.normalBuffer.numItems = normals.length;
 
 	gl.bindBuffer(gl.ARRAY_BUFFER, coordinate_system.colorBuffer);
 	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
