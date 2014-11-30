@@ -14,19 +14,92 @@
 <script type="text/javascript" src="controls.js"></script>
 <script type="text/javascript" src="transformations.js"></script>
 
-<script id="shader-fs" type="x-shader/x-fragment">
+
+
+
+
+
+
+<script id="shader-fs-phong" type="x-shader/x-fragment">
 	precision mediump float;
 
+	varying vec3 vWorldNormal;
+	varying vec3 vWorldPosition;
 	varying vec4 vColor;
-	varying vec3 vLightWeighting;
+
+	uniform vec3 uLightingDirection;
+	uniform vec3 uAmbientColor;
+	uniform vec3 uDiffuseColor;
+	uniform vec3 uSpecularColor;
 
 	void main(void) {
-		gl_FragColor = vec4(vColor.rgb * vLightWeighting, vColor.a);
-    }
+		vec3 worldCamera = normalize(vec3(vWorldPosition));
+		vec3 worldNormal = normalize(vWorldNormal);
+
+		float diffuseReflection, specularReflection;
+
+		diffuseReflection = dot(worldNormal, uLightingDirection);
+		diffuseReflection = max(diffuseReflection, 0.0);
+
+		specularReflection = dot(worldCamera, reflect(uLightingDirection, worldNormal));
+		specularReflection = pow(max(specularReflection, 0.0), 40.0);
+
+		gl_FragColor = vColor * vec4(
+			uAmbientColor +
+			uDiffuseColor * diffuseReflection +
+			uSpecularColor * specularReflection,
+			1.0
+		);
+	}
 
 </script>
 
-<script id="shader-vs" type="x-shader/x-vertex">
+
+
+<script id="shader-vs-phong" type="x-shader/x-vertex">
+	attribute vec3 aVertexPosition;
+	attribute vec3 aVertexNormal;
+	attribute vec4 aVertexColor;
+
+	uniform mat4 uMVMatrix;
+	uniform mat4 uPMatrix;
+
+	varying vec3 vWorldNormal;
+	varying vec3 vWorldPosition;
+	varying vec4 vColor;
+
+	void main(void) {
+		mat3 uNMatrix = mat3(uMVMatrix);
+
+		vec4 vWorldPosition4 = uMVMatrix * vec4(aVertexPosition, 1.0);
+
+		gl_Position = uPMatrix * vWorldPosition4;
+    	vWorldPosition = vec3(vWorldPosition4);
+    	vWorldNormal = uNMatrix * aVertexNormal;
+		vColor = aVertexColor;
+	}
+</script>
+
+
+
+
+
+
+
+
+
+<script id="shader-fs-gouraud" type="x-shader/x-fragment">
+	precision mediump float;
+
+	varying vec4 vColor;
+
+	void main(void) {
+		gl_FragColor = vColor;
+	}
+
+</script>
+
+<script id="shader-vs-gouraud" type="x-shader/x-vertex">
 
 	attribute vec3 aVertexPosition;
 	attribute vec3 aVertexNormal;
@@ -36,37 +109,35 @@
 	uniform mat4 uPMatrix;
 
 	uniform vec3 uAmbientColor;
-	uniform vec3 uDirectionalColor;
+	uniform vec3 uDiffuseColor;
+	uniform vec3 uSpecularColor;
 
 	uniform vec3 uLightingDirection;
 
-	uniform bool uUseLighting;
-
 	varying vec4 vColor;
-	varying vec3 vLightWeighting;
 
 	void main(void) {
-		mat4 uNMatrix;
-		uNMatrix = uMVMatrix;
+		mat3 uNMatrix = mat3(uMVMatrix);
+		vec4 worldPosition = uMVMatrix * vec4(aVertexPosition, 1.0);
+		vec3 worldNormal = normalize(uNMatrix * aVertexNormal);
+		vec3 worldCamera = normalize(vec3(worldPosition));
 
-		vec4 transformedPosition = uMVMatrix * vec4(aVertexPosition, 1.0);
-		gl_Position = uPMatrix * transformedPosition;
-		vColor = aVertexColor;
+		float diffuseReflection, specularReflection;
 
-		if (!uUseLighting)
-			vLightWeighting = vec3(1.0, 1.0, 1.0);
-		else {
-			vec3 transformedNormal = normalize(mat3(uNMatrix) * aVertexNormal);
-			vec3 towardsCamera = normalize(vec3(transformedPosition));
-			float diffuseReflection = max(dot(transformedNormal, uLightingDirection), 0.0);
+		diffuseReflection = dot(worldNormal, uLightingDirection);
+		diffuseReflection = max(diffuseReflection, 0.0);
 
-			float specular_components = max(dot(towardsCamera, reflect(transformedNormal, uLightingDirection)), 0.0);
-			float specularReflection = pow(specular_components, 30.0);
-			vLightWeighting = uAmbientColor +
-			                  uDirectionalColor * diffuseReflection +
-			                  uDirectionalColor * specularReflection;
-		}
+		specularReflection = dot(worldCamera, reflect(uLightingDirection, worldNormal));
+		specularReflection = pow(max(specularReflection, 0.0), 100.0);
 
+		vColor = aVertexColor * vec4(
+			uAmbientColor +
+			uDiffuseColor * diffuseReflection +
+			uSpecularColor * specularReflection,
+			1.0
+		);
+
+		gl_Position = uPMatrix * worldPosition;
 	}
 </script>
 
@@ -124,10 +195,35 @@
 	}
 
 
-		function change_lighting_mode(lighting_mode) { // lighting_mode can switch between modes like phong and gouraud shading
+	var lighting_mode = 2;
+
+	function update_lighting_mode() {
 		
-		if (lighting_mode == 1)
+		if (lighting_mode == 1) {
 			shaderProgram = shaderProgramGouraud;
+			gl.uniform3f(shaderProgram.diffuseColorUniform, 0.5, 0.5, 0.5);
+			gl.uniform3f(shaderProgram.specularColorUniform, 0.0, 0.0, 0.0);
+		}
+
+		else if (lighting_mode == 2) {
+			shaderProgram = shaderProgramGouraud;
+			gl.uniform3f(shaderProgram.diffuseColorUniform, 0.0, 0.0, 0.0);
+			gl.uniform3f(shaderProgram.specularColorUniform, 0.5, 0.5, 0.5);
+		}
+
+		else if (lighting_mode == 3) {
+			shaderProgram = shaderProgramPhong;
+			gl.uniform3f(shaderProgram.diffuseColorUniform, 0.5, 0.5, 0.5);
+			gl.uniform3f(shaderProgram.specularColorUniform, 0.0, 0.0, 0.0);
+		}
+
+		else if (lighting_mode == 4) {
+			shaderProgram = shaderProgramPhong;
+			gl.uniform3f(shaderProgram.diffuseColorUniform, 0.0, 0.0, 0.0);
+			gl.uniform3f(shaderProgram.specularColorUniform, 0.5, 0.5, 0.5);
+		}
+
+		gl.useProgram(shaderProgram)
 
 		gl.uniform1i(shaderProgram.useLightingUniform, lighting_mode);
 
@@ -141,46 +237,70 @@
 		// vec3.scale(adjustedLD, -1);
 
 		gl.uniform3fv(shaderProgram.lightingDirectionUniform, adjustedLD);
-		gl.uniform3f(shaderProgram.directionalColorUniform, 0.5, 0.5, 0.5); // lighting color
 	}
 
 
 	var shaderProgram;
 	var shaderProgramGouraud;
+	var shaderProgramPhong;
 
 
 	function initShaders() {
 
-		var fragmentShaderGouraud = getShader(gl, "shader-fs");
-		var vertexShaderGouraud = getShader(gl, "shader-vs");
+		var fragmentShaderGouraud = getShader(gl, "shader-fs-gouraud");
+		var vertexShaderGouraud = getShader(gl, "shader-vs-gouraud");
 
+		var fragmentShaderPhong = getShader(gl, "shader-fs-phong");
+		var vertexShaderPhong = getShader(gl, "shader-vs-phong");
 
 		shaderProgramGouraud = gl.createProgram();
+
 		gl.attachShader(shaderProgramGouraud, vertexShaderGouraud);
 		gl.attachShader(shaderProgramGouraud, fragmentShaderGouraud);
 		gl.linkProgram(shaderProgramGouraud);
 
+
+		shaderProgramPhong = gl.createProgram();
+
+		gl.attachShader(shaderProgramPhong, vertexShaderPhong);
+		gl.attachShader(shaderProgramPhong, fragmentShaderPhong);
+		gl.linkProgram(shaderProgramPhong);
+
+
 		if (!gl.getProgramParameter(shaderProgramGouraud, gl.LINK_STATUS)) {
-			alert("Could not initialise shaders");
+			alert("Could not initialise gouraud shaders");
 		}
 
-		gl.useProgram(shaderProgramGouraud);
 
-		shaderProgramGouraud.vertexPositionAttribute = gl.getAttribLocation(shaderProgramGouraud, "aVertexPosition");
-		gl.enableVertexAttribArray(shaderProgramGouraud.vertexPositionAttribute);
+		if (!gl.getProgramParameter(shaderProgramPhong, gl.LINK_STATUS)) {
+			alert("Could not initialise phong shaders");
+		}
 
-		shaderProgramGouraud.vertexColorAttribute = gl.getAttribLocation(shaderProgramGouraud, "aVertexColor");
-		gl.enableVertexAttribArray(shaderProgramGouraud.vertexColorAttribute);
 
-		shaderProgramGouraud.vertexNormalAttribute = gl.getAttribLocation(shaderProgramGouraud, "aVertexNormal");
-		gl.enableVertexAttribArray(shaderProgramGouraud.vertexNormalAttribute);
+		var connectToShader = function(shader) {
 
-		shaderProgramGouraud.mvMatrixUniform = gl.getUniformLocation(shaderProgramGouraud, "uMVMatrix");
-		shaderProgramGouraud.pMatrixUniform = gl.getUniformLocation(shaderProgramGouraud, "uPMatrix");
-		shaderProgramGouraud.ambientColorUniform = gl.getUniformLocation(shaderProgramGouraud, "uAmbientColor");
-		shaderProgramGouraud.directionalColorUniform = gl.getUniformLocation(shaderProgramGouraud, "uDirectionalColor");
-		shaderProgramGouraud.lightingDirectionUniform = gl.getUniformLocation(shaderProgramGouraud, "uLightingDirection");
-		shaderProgramGouraud.useLightingUniform = gl.getUniformLocation(shaderProgramGouraud, "uUseLighting");
+			gl.useProgram(shader);
+
+			shader.vertexPositionAttribute = gl.getAttribLocation(shader, "aVertexPosition");
+			shader.vertexColorAttribute    = gl.getAttribLocation(shader, "aVertexColor");
+			shader.vertexNormalAttribute   = gl.getAttribLocation(shader, "aVertexNormal");
+
+			gl.enableVertexAttribArray(shader.vertexPositionAttribute);
+			gl.enableVertexAttribArray(shader.vertexColorAttribute);
+			gl.enableVertexAttribArray(shader.vertexNormalAttribute);
+
+			shader.mvMatrixUniform      = gl.getUniformLocation(shader, "uMVMatrix");
+			shader.pMatrixUniform       = gl.getUniformLocation(shader, "uPMatrix");
+			shader.ambientColorUniform  = gl.getUniformLocation(shader, "uAmbientColor");
+			shader.specularColorUniform = gl.getUniformLocation(shader, "uSpecularColor");
+			shader.diffuseColorUniform  = gl.getUniformLocation(shader, "uDiffuseColor");
+
+			shader.lightingDirectionUniform = gl.getUniformLocation(shader, "uLightingDirection");
+
+		}
+
+		connectToShader(shaderProgramGouraud);
+		connectToShader(shaderProgramPhong);
 	}
 
 
@@ -190,8 +310,8 @@
 	var pMatrix = mat4.create();
 
 	function degToRad(degrees) {
-        return degrees * Math.PI / 180;
-    }
+		return degrees * Math.PI / 180;
+	}
 
 	function webGLStart() {
 		var canvas = document.getElementById("canvas");
@@ -214,10 +334,10 @@
 	}
 
 	function tick() {
-    	requestAnimationFrame(tick); // webgl-utils.js
-    	draw_scene();
-    	animate();
-    }
+		requestAnimationFrame(tick); // webgl-utils.js
+		draw_scene();
+		animate();
+	}
 
 
 	function animate() {
@@ -229,7 +349,7 @@
 	var lastTime = new Date().getTime();
 	var elapsed = 0;
 
-    var selected_object_id = 0;
+	var selected_object_id = 0;
 
 
 </script>

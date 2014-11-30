@@ -23,15 +23,15 @@ var scene;
 function build_scene() {
 	scene = [ 
 		new Object3D(null, [
-			new Object3D(pyramid),
+			new Object3D(sphere),
 			new Object3D(cube),
 			new Object3D(cylinder),
 
-			new Object3D(teapot),
 			new Object3D(sphere),
+			new Object3D(cube),
 			new Object3D(cylinder),
 
-			new Object3D(pyramid),
+			new Object3D(sphere),
 			new Object3D(cube),
 			new Object3D(cylinder)
 			])
@@ -41,9 +41,7 @@ function build_scene() {
 	mat4.translate(scene[0].children[1].posRotMatrix, [ 0.0, 4.0, -15.0]);
 	mat4.translate(scene[0].children[2].posRotMatrix, [ 3.0, 4.0, -15.0]);
 
-	mat4.scale(scene[0].children[3].sclMatrix, [ 1.5, 1.5, 1.5]);
-	mat4.translate(scene[0].children[3].posRotMatrix, [ -3.0, -1.0, -15.0]);
-
+	mat4.translate(scene[0].children[3].posRotMatrix, [ -3.0, 0.0, -15.0]);
 	mat4.translate(scene[0].children[4].posRotMatrix, [ 0.0, 0.0, -15.0]);
 	mat4.translate(scene[0].children[5].posRotMatrix, [ 3.0, 0.0, -15.0]);
 
@@ -56,7 +54,7 @@ function build_scene() {
 
 function draw_scene() {
 
-	change_lighting_mode(1);
+	update_lighting_mode();
 
 	gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
