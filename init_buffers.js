@@ -370,6 +370,8 @@ function init_sphere_buffers(n, ring_num) {
 	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
 	sphere.positionBuffer.numItems = n*ring_num;
 
+	sphere.normalBuffer = sphere.positionBuffer;
+
 	gl.bindBuffer(gl.ARRAY_BUFFER, sphere.colorBuffer);
 	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(unpackedColors), gl.STATIC_DRAW);
 	sphere.colorBuffer.numItems = n*ring_num;

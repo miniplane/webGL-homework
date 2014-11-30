@@ -5,6 +5,14 @@
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
 
 <script type="text/javascript" src="http://benvanik.github.io/WebGL-Inspector/core/embed.js" async></script>
+<script type="text/javascript" src="jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="glMatrix-0.9.5.min.js"></script>
+<script type="text/javascript" src="init_buffers.js"></script>
+<script type="text/javascript" src="load_model.js"></script> 
+
+<script type="text/javascript" src="draw_scene.js"></script>
+<script type="text/javascript" src="controls.js"></script>
+<script type="text/javascript" src="transformations.js"></script>
 
 <script id="shader-fs" type="x-shader/x-fragment">
 	precision mediump float;
@@ -41,28 +49,26 @@
 		mat4 uNMatrix;
 		uNMatrix = uMVMatrix;
 
-		gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+		vec4 transformedPosition = uMVMatrix * vec4(aVertexPosition, 1.0);
+		gl_Position = uPMatrix * transformedPosition;
 		vColor = aVertexColor;
 
 		if (!uUseLighting)
 			vLightWeighting = vec3(1.0, 1.0, 1.0);
 		else {
-			vec3 transformedNormal = mat3(uNMatrix) * aVertexNormal;
-			float directionalLightWeighting = max(dot(transformedNormal, uLightingDirection), 0.0);
-			vLightWeighting = uAmbientColor + uDirectionalColor * directionalLightWeighting;
+			vec3 transformedNormal = normalize(mat3(uNMatrix) * aVertexNormal);
+			vec3 towardsCamera = normalize(vec3(transformedPosition));
+			float diffuseReflection = max(dot(transformedNormal, uLightingDirection), 0.0);
+
+			float specular_components = max(dot(towardsCamera, reflect(transformedNormal, uLightingDirection)), 0.0);
+			float specularReflection = pow(specular_components, 30.0);
+			vLightWeighting = uAmbientColor +
+			                  uDirectionalColor * diffuseReflection +
+			                  uDirectionalColor * specularReflection;
 		}
 
 	}
 </script>
-
-<script type="text/javascript" src="jquery-2.1.1.min.js"></script>
-<script type="text/javascript" src="glMatrix-0.9.5.min.js"></script>
-<script type="text/javascript" src="init_buffers.js"></script>
-<script type="text/javascript" src="load_model.js"></script> 
-
-<script type="text/javascript" src="draw_scene.js"></script>
-<script type="text/javascript" src="controls.js"></script>
-<script type="text/javascript" src="transformations.js"></script>
 
 
 <script type="text/javascript">
@@ -118,49 +124,18 @@
 	}
 
 
-	var shaderProgram;
-
-	function initShaders() {
-		var fragmentShader = getShader(gl, "shader-fs");
-		var vertexShader = getShader(gl, "shader-vs");
-
-		shaderProgram = gl.createProgram();
-		gl.attachShader(shaderProgram, vertexShader);
-		gl.attachShader(shaderProgram, fragmentShader);
-		gl.linkProgram(shaderProgram);
-
-		if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
-			alert("Could not initialise shaders");
-		}
-
-		gl.useProgram(shaderProgram);
-
-		shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
-		gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
-
-		shaderProgram.vertexColorAttribute = gl.getAttribLocation(shaderProgram, "aVertexColor");
-		gl.enableVertexAttribArray(shaderProgram.vertexColorAttribute);
-
-		shaderProgram.vertexNormalAttribute = gl.getAttribLocation(shaderProgram, "aVertexNormal");
-		gl.enableVertexAttribArray(shaderProgram.vertexNormalAttribute);
-
-		shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
-		shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
-		shaderProgram.ambientColorUniform = gl.getUniformLocation(shaderProgram, "uAmbientColor");
-		shaderProgram.directionalColorUniform = gl.getUniformLocation(shaderProgram, "uDirectionalColor");
-		shaderProgram.lightingDirectionUniform = gl.getUniformLocation(shaderProgram, "uLightingDirection");
-		shaderProgram.useLightingUniform = gl.getUniformLocation(shaderProgram, "uUseLighting");
-	}
-
-	function change_lighting_mode(lighting_mode) { // lighting_mode can switch between modes like phong and gouraud shading
+		function change_lighting_mode(lighting_mode) { // lighting_mode can switch between modes like phong and gouraud shading
 		
+		if (lighting_mode == 1)
+			shaderProgram = shaderProgramGouraud;
+
 		gl.uniform1i(shaderProgram.useLightingUniform, lighting_mode);
 
 		// ambient
 		gl.uniform3f(shaderProgram.ambientColorUniform, 0.2, 0.2, 0.2); 
 
 		// directional
-		var lighting_direction = [1, 1, 1] // up
+		var lighting_direction = [0, 0, 1];
 		var adjustedLD = vec3.create();
 		vec3.normalize(lighting_direction, adjustedLD);
 		// vec3.scale(adjustedLD, -1);
@@ -168,6 +143,47 @@
 		gl.uniform3fv(shaderProgram.lightingDirectionUniform, adjustedLD);
 		gl.uniform3f(shaderProgram.directionalColorUniform, 0.5, 0.5, 0.5); // lighting color
 	}
+
+
+	var shaderProgram;
+	var shaderProgramGouraud;
+
+
+	function initShaders() {
+
+		var fragmentShaderGouraud = getShader(gl, "shader-fs");
+		var vertexShaderGouraud = getShader(gl, "shader-vs");
+
+
+		shaderProgramGouraud = gl.createProgram();
+		gl.attachShader(shaderProgramGouraud, vertexShaderGouraud);
+		gl.attachShader(shaderProgramGouraud, fragmentShaderGouraud);
+		gl.linkProgram(shaderProgramGouraud);
+
+		if (!gl.getProgramParameter(shaderProgramGouraud, gl.LINK_STATUS)) {
+			alert("Could not initialise shaders");
+		}
+
+		gl.useProgram(shaderProgramGouraud);
+
+		shaderProgramGouraud.vertexPositionAttribute = gl.getAttribLocation(shaderProgramGouraud, "aVertexPosition");
+		gl.enableVertexAttribArray(shaderProgramGouraud.vertexPositionAttribute);
+
+		shaderProgramGouraud.vertexColorAttribute = gl.getAttribLocation(shaderProgramGouraud, "aVertexColor");
+		gl.enableVertexAttribArray(shaderProgramGouraud.vertexColorAttribute);
+
+		shaderProgramGouraud.vertexNormalAttribute = gl.getAttribLocation(shaderProgramGouraud, "aVertexNormal");
+		gl.enableVertexAttribArray(shaderProgramGouraud.vertexNormalAttribute);
+
+		shaderProgramGouraud.mvMatrixUniform = gl.getUniformLocation(shaderProgramGouraud, "uMVMatrix");
+		shaderProgramGouraud.pMatrixUniform = gl.getUniformLocation(shaderProgramGouraud, "uPMatrix");
+		shaderProgramGouraud.ambientColorUniform = gl.getUniformLocation(shaderProgramGouraud, "uAmbientColor");
+		shaderProgramGouraud.directionalColorUniform = gl.getUniformLocation(shaderProgramGouraud, "uDirectionalColor");
+		shaderProgramGouraud.lightingDirectionUniform = gl.getUniformLocation(shaderProgramGouraud, "uLightingDirection");
+		shaderProgramGouraud.useLightingUniform = gl.getUniformLocation(shaderProgramGouraud, "uUseLighting");
+	}
+
+
 
 
 	var mvMatrix = mat4.create();
