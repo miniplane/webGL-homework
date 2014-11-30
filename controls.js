@@ -3,6 +3,11 @@ var selection_keys = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 var scaling_keys = ["X", "Y", "Z"];
 var rotation_keys = ["W", "S", "E", "Q", "D", "A"];
 var movement_keys = [37, 38, 39, 40, 188, 190];
+var lighting_mode_keys = ["u", "U", "I", "O", "P"];
+
+
+//'u' (Gouraud/diffuse), 'i' (Gouraud/specular), 'o' (Phong/diffuse), and 'p' (Phong/specular).
+
 
 //  37 = <
 //  38 = ^
@@ -43,6 +48,18 @@ function event_handling(event) {
 			translate(event, scene[0]);
 		else
 			translate(event, scene[0].children[selected_object_id-1]);
+	}
+
+	else if (lighting_mode_keys.indexOf(keyString)) {
+		console.log(keyString);
+		if (keyString == "U")
+			lighting_mode = 1;
+		else if (keyString == "I")
+			lighting_mode = 2;
+		else if (keyString == "O")
+			lighting_mode = 3;
+		else if (keyString == "P")
+			lighting_mode = 4;
 	}
 
 }

@@ -195,30 +195,30 @@
 	}
 
 
-	var lighting_mode = 2;
+	var lighting_mode = 1;
 
 	function update_lighting_mode() {
 		
-		if (lighting_mode == 1) {
+		if (lighting_mode == 1) { // gouraud diffuse
 			shaderProgram = shaderProgramGouraud;
 			gl.uniform3f(shaderProgram.diffuseColorUniform, 0.5, 0.5, 0.5);
 			gl.uniform3f(shaderProgram.specularColorUniform, 0.0, 0.0, 0.0);
 		}
 
-		else if (lighting_mode == 2) {
+		else if (lighting_mode == 2) { // gouraud specular
 			shaderProgram = shaderProgramGouraud;
 			gl.uniform3f(shaderProgram.diffuseColorUniform, 0.0, 0.0, 0.0);
 			gl.uniform3f(shaderProgram.specularColorUniform, 0.5, 0.5, 0.5);
 		}
 
-		else if (lighting_mode == 3) {
-			shaderProgram = shaderProgramPhong;
+		else if (lighting_mode == 3) { // phong diffuse
+			shaderProgram = shaderProgramPhong; 
 			gl.uniform3f(shaderProgram.diffuseColorUniform, 0.5, 0.5, 0.5);
 			gl.uniform3f(shaderProgram.specularColorUniform, 0.0, 0.0, 0.0);
 		}
 
-		else if (lighting_mode == 4) {
-			shaderProgram = shaderProgramPhong;
+		else if (lighting_mode == 4) { // phong specular
+			shaderProgram = shaderProgramPhong; 
 			gl.uniform3f(shaderProgram.diffuseColorUniform, 0.0, 0.0, 0.0);
 			gl.uniform3f(shaderProgram.specularColorUniform, 0.5, 0.5, 0.5);
 		}
