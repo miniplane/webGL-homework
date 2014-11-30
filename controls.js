@@ -3,7 +3,7 @@ var selection_keys = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 var scaling_keys = ["X", "Y", "Z"];
 var rotation_keys = ["W", "S", "E", "Q", "D", "A"];
 var movement_keys = [37, 38, 39, 40, 188, 190];
-var lighting_mode_keys = ["u", "U", "I", "O", "P"];
+var lighting_mode_keys = ["u", "U", "I", "O", "P"]; // for some reason, "U" is not recognized in my firefox
 
 
 //'u' (Gouraud/diffuse), 'i' (Gouraud/specular), 'o' (Phong/diffuse), and 'p' (Phong/specular).

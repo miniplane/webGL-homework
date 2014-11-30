@@ -15,11 +15,6 @@
 <script type="text/javascript" src="transformations.js"></script>
 
 
-
-
-
-
-
 <script id="shader-fs-phong" type="x-shader/x-fragment">
 	precision mediump float;
 
@@ -54,8 +49,6 @@
 
 </script>
 
-
-
 <script id="shader-vs-phong" type="x-shader/x-vertex">
 	attribute vec3 aVertexPosition;
 	attribute vec3 aVertexNormal;
@@ -79,12 +72,6 @@
 		vColor = aVertexColor;
 	}
 </script>
-
-
-
-
-
-
 
 
 
@@ -140,6 +127,9 @@
 		gl_Position = uPMatrix * worldPosition;
 	}
 </script>
+
+
+
 
 
 <script type="text/javascript">
@@ -232,6 +222,7 @@
 
 		// directional
 		var lighting_direction = [0, 0, 1];
+		// Implement the following shading and illumination models using a point light source initialized at coordinates (0, 10, 0). 
 		var adjustedLD = vec3.create();
 		vec3.normalize(lighting_direction, adjustedLD);
 		// vec3.scale(adjustedLD, -1);
