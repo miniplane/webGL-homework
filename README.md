@@ -1,6 +1,8 @@
 webGL-homework
 ==============
 
+try here: http://miniplane.github.io/webGL-homework/
+
 1-9: toggle between the shapes
 
 scaling:
